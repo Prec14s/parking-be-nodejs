@@ -104,6 +104,26 @@ static async me (req,res){
     const user = await User.findOne({ where : {id : userId}});
     res.json(user);
     }
-}
+
+    static async register(req,res) {
+        let { username, password, email} = req.body;
+        password = bcrypt.hashSync(password,10);
+
+        const  user = User.create({username,password,email});
+        
+       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
+      expiresIn: "1h",
+    });
+
+    return res.json({ accessToken: token });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+
+
+    }
+
+
 
 
